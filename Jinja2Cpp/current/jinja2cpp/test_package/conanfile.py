@@ -7,6 +7,11 @@ class Jinja2CppTestPackage(ConanFile):
 
     def build(self):
         cmake = CMake(self)
+        compiler = self.settings.get_safe("compiler")
+        if compiler == 'Visual Studio':
+            runtime = self.settings.get_safe("compiler.runtime")
+            cmake.definitions["MSVC_RUNTIME_TYPE"] = '/' + runtime
+            
         cmake.configure()
         cmake.build()
 

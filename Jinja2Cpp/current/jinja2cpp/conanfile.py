@@ -10,7 +10,7 @@ class Jinja2cppConan(ConanFile):
     name = "jinja2cpp"
     version = "1.0.0"
     license = "MIT"
-    url = "https://gitlab.com/Manu343726/Jinja2Cpp-conan"
+    url = "https://jinja2cpp.dev/"
     description = "Jinja2 C++ (and for C++) almost full-conformance template engine implementation"
     settings = "os", "compiler", "build_type", "arch"
     options = {
@@ -19,12 +19,12 @@ class Jinja2cppConan(ConanFile):
     default_options = {'shared': False}
     generators = "cmake_find_package"
     requires = (
-        "variant-lite/1.2.1@nonstd-lite/stable",
-        "expected-lite/0.3.0@nonstd-lite/stable",
-        "optional-lite/3.2.0@nonstd-lite/stable",
+        "variant-lite/[1.2.1]@nonstd-lite/stable",
+        "expected-lite/[0.3.0]@nonstd-lite/stable",
+        "optional-lite/[3.2.0]@nonstd-lite/stable",
         "boost/1.69.0@conan/stable",
         "string-view-lite/[~=1]@nonstd-lite/testing",
-        "fmt/5.3.0@bincrafters/stable"
+        "fmt/[>=5.3]@bincrafters/stable"
     )
 
     def configure(self):
@@ -44,6 +44,11 @@ class Jinja2cppConan(ConanFile):
         cmake = CMake(self)
         cmake.definitions["JINJA2CPP_BUILD_TESTS"] = False
         cmake.definitions["JINJA2CPP_DEPS_MODE"] = "conan-build"
+        compiler = self.settings.get_safe("compiler")
+        if compiler == 'Visual Studio':
+            runtime = self.settings.get_safe("compiler.runtime")
+            cmake.definitions["JINJA2CPP_MSVC_RUNTIME_TYPE"] = '/' + runtime
+            
         cmake.configure(source_folder=self.name)
         cmake.build()
 
